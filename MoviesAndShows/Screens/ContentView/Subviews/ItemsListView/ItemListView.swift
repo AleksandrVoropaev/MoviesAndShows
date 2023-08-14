@@ -20,18 +20,31 @@ struct ItemListView<Item: WatchItem, Details: WatchItemDetails>: View {
     // MARK: - BODY
 
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: columns) {
-                ForEach(viewModel.itemsViewModels, id: \.item.id) { viewModel in
-                    ItemView(viewModel: viewModel)
-                        .padding()
-                        .onAppear {
-                            self.viewModel.onAppear(item: viewModel.item)
-                        }
-                }
-                .refreshable {
+        if #available(iOS 15.0, *) {
+            ScrollView {
+                content
+            }
+            .refreshable {
+                viewModel.reload()
+            }
+        } else {
+            content
+                .refreshableScrollView {
                     viewModel.reload()
                 }
+        }
+    }
+
+    // MARK: - CONTENT
+    
+    var content: some View {
+        LazyVGrid(columns: columns) {
+            ForEach(viewModel.itemsViewModels, id: \.item.id) { viewModel in
+                ItemView(viewModel: viewModel)
+                    .padding()
+                    .onAppear {
+                        self.viewModel.onAppear(item: viewModel.item)
+                    }
             }
 
             if viewModel.canLoadMore {

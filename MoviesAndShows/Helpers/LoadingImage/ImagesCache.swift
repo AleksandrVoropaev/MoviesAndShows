@@ -5,12 +5,15 @@
 //  Created by Oleksandr Voropayev on 13.08.2023.
 //
 
-import Foundation
 import SwiftUI
 
-final class ImagesCache {
+protocol ImageCache {
+    static subscript(_ url: URL?) -> Image? { get set }
+}
+
+final class ImageCacheImpl: ImageCache {
     static private var cache = {
-        let result = NSCache<NSString, ImageWrapper>()
+        let result = NSCache<NSURL, ImageWrapper>()
         result.countLimit = 100
 
         return result
@@ -19,20 +22,20 @@ final class ImagesCache {
     static subscript(_ url: URL?) -> Image? {
         get {
             url
-                .map(\.absoluteString)
-                .map(NSString.init)
+                .map { $0 as NSURL }
                 .flatMap {
                     cache.object(forKey: $0)?.image
                 }
         }
         set {
             url
-                .map(\.absoluteString)
-                .map(NSString.init)
+                .map { $0 as NSURL }
                 .map {
-                    guard let newValue else { return }
-
-                    cache.setObject(ImageWrapper(newValue), forKey: $0)
+                    if let newValue {
+                        cache.setObject(ImageWrapper(newValue), forKey: $0)
+                    } else {
+                        cache.removeObject(forKey: $0)
+                    }
                 }
         }
     }

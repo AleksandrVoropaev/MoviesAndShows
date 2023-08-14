@@ -7,37 +7,42 @@
 
 import SwiftUI
 
-struct CachedAsyncImage<ViewContent: View>: View {
+struct CachedAsyncImage<ErrorContent: View, PlaceholderContent: View, ViewContent: View>: View {
+    // MARK: - PROPERTIES
+
+    @StateObject private var imageLoader: ImageLoader<ImageCacheImpl>
     let url: URL?
-    let scale: CGFloat
-    let transaction: Transaction
-    let content: (AsyncImagePhase) -> ViewContent
+    let error: () -> ErrorContent
+    let placeholder: () -> PlaceholderContent
+    let content: (Image) -> ViewContent
+
+    // MARK: - INIT
 
     init(
         url: URL?,
-        scale: CGFloat = 1,
-        transaction: Transaction = Transaction(),
-        @ViewBuilder content: @escaping (AsyncImagePhase) -> ViewContent
+        @ViewBuilder error: @escaping () -> ErrorContent,
+        @ViewBuilder placeholder: @escaping () -> PlaceholderContent,
+        @ViewBuilder content: @escaping (Image) -> ViewContent
     ) {
         self.url = url
-        self.scale = scale
-        self.transaction = transaction
+        self.error = error
+        self.placeholder = placeholder
         self.content = content
+        self._imageLoader = StateObject(wrappedValue: ImageLoader(url: url))
     }
 
-    var body: some View {
-        if let cached = ImagesCache[url] {
-            content(.success(cached))
-        } else {
-            AsyncImage(url: url, scale: scale, transaction: transaction) { phase in
-                { () -> ViewContent in
-                    if case .success(let image) = phase {
-                        ImagesCache[url] = image
-                    }
+    // MARK: - BODY
 
-                    return content(phase)
-                }()
+    var body: some View {
+        Group {
+            if let image = imageLoader.image {
+                content(image)
+            } else if imageLoader.isLoading {
+                placeholder()
+            } else {
+                error()
             }
         }
+        .onAppear(perform: imageLoader.load)
     }
 }
