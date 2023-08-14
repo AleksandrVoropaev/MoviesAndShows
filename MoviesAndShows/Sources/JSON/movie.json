@@ -1,0 +1,20 @@
+{
+    "adult": false,
+    "backdrop_path": "/fM4TVNg27IBCYAz8FUiLefWck1p.jpg",
+    "genre_ids": [
+        35,
+        18
+    ],
+    "id": 101731,
+    "original_language": "en",
+    "original_title": "The Magic of Belle Isle",
+    "overview": "In an effort to tap into his original talent, a wheelchair-bound author moves to a rural town, where he befriends a single mother and her three kids, who help reignite his passion for writing.",
+    "popularity": 11.727,
+    "poster_path": "/250tjGWyt5PiL4b2Tevi0hhnRfI.jpg",
+    "release_date": "2012-07-06",
+    "title": "The Magic of Belle Isle",
+    "video": false,
+    "vote_average": 7,
+    "vote_count": 359
+}
+
