@@ -52,7 +52,7 @@ Browse and explore movies and TV shows by genre using The Movie Database (TMDB) 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/MoviesAndShows.git
+git clone https://github.com/AleksandrVoropaev/MoviesAndShows.git
 ```
 2. Navigate to the project directory:
 ```bash
